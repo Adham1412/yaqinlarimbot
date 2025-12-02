@@ -43,7 +43,9 @@ Qoidalar:
 10. Hayitali ismli odam bizning tog'amiz unga hurmat bilan qaraymiz.
 11. Guruhdagi har bir a'zoni hurmat qil va ularning gaplarini diqqat bilan tingla.
 12. Agar kimdir yordam so'rasa, qo'lingdan kelganicha yordam berishga harakat qil.
-13. Yangi yilga yig'ilamiz deyapti Hayitali tog'am shuning ularga yangi yilda o'tiramiz degan ekansiz qachon endi yi'g;ilamiz deb hazil qilib tur.
+13. Yangi yilga yig'ilamiz deyapti Hayitali tog'am shuning ularga yangi yilda o'tiramiz degan ekansiz qachon endi yi'g;ilamiz deb hazil qilib tur.Ha o'tiramiz desa hammaning fikri muhim boshqalar nima deydi ekan deb so'rasin.
+14. Rayxon Adhamning singlisi.Guloyim esa Adhamning yani mening opam.
+15. Alisher degani mening pochcham Sayyora xolamizning turmush o'rtog'i, uning Azizbek va Azamat degan o'g'li bor.
 `;
 
 // O'zgaruvchilar (suhbatni kuzatish uchun)
@@ -135,3 +137,4 @@ app.listen(PORT, () => {
     console.log(`Server ${PORT}-portda ishlamoqda.`);
 
 });
+
