@@ -23,7 +23,7 @@ const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 // DIQQAT: 2.5 modeli yo'q, shuning uchun 1.5 ga to'g'irlab qo'ydim (ishlashi uchun)
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); 
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" }); 
 
 // 2. Botning "Miyasi" (Xarakteri) - ESKI HOLATDA
 const SYSTEM_PROMPT = `
@@ -135,3 +135,4 @@ app.get('/', (req, res) => res.send('Bot uyg\'oq va ishlayapti!'));
 app.listen(PORT, () => {
     console.log(`Server ${PORT}-portda ishlamoqda.`);
 });
+
