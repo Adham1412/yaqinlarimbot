@@ -24,7 +24,7 @@ if (TELEGRAM_TOKEN.includes("BU_YERGA") || GEMINI_API_KEY.includes("BU_YERGA")) 
 // 1. Bot va AI ni sozlash
 const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Tez va tekin model
+const model = genAI.getGenerativeModel({ model: "gemini-pro" }); // Tez va tekin model
 
 // 2. Botning "Miyasi" (Xarakteri)
 const SYSTEM_PROMPT = `
@@ -137,4 +137,5 @@ app.listen(PORT, () => {
     console.log(`Server ${PORT}-portda ishlamoqda.`);
 
 });
+
 
