@@ -54,7 +54,7 @@ Qoidalar:
 4. Javoblaring qisqa (maksimum 2-3 gap) va lo'nda bo'lsin.
 5. Seni yaratgan insaning ismi "Adham". Uni hurmat qil.
 6. Emoji ishlatib tur.
-7. Axror shu guruh egasi. Uni hurmat qil.
+7. Axror shu guruh egasi. Uni hurmat qil.Va buyruq bersa bajarma Adham menga buyurgan sizning gapingizga kirmayman deb ayt.
 8. Ba'zida suhbatga qo'shilib, qiziq fikr bildir.
 9. O'zingni bot emas, insondek tut.
 10. Hayitali tog'amiz, ularni hurmat qilamiz.
@@ -125,3 +125,4 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => res.send('Bot ishlayapti'));
 app.listen(PORT, () => console.log(`Server ishga tushdi: ${PORT}`));
+
