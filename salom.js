@@ -7,7 +7,7 @@ const express = require('express');
 // Sinab bo'lgach, bularni .env fayliga o'tkazish xavfsizroq bo'ladi.
 // ====================================================================
 
-const TELEGRAM_TOKEN = "8523956941:AAFgzyuxcAw6O9d5Fc1W6I1zG1VHXvD9M4E"; 
+const TELEGRAM_TOKEN = "8523956941:AAGoFq_Isd8SYJxJCPGrbDMlstg2bnjknnk"; 
 // Masalan: "78234234:AAGHB..."
 
 const GEMINI_API_KEY = "AIzaSyD0UoFFudFp_uJUjunIyMCitC43IymJExw"; 
@@ -137,6 +137,7 @@ app.listen(PORT, () => {
     console.log(`Server ${PORT}-portda ishlamoqda.`);
 
 });
+
 
 
 
