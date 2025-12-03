@@ -1,32 +1,31 @@
+require('dotenv').config(); // Tokenlarni .env fayldan o'qiydi
 const TelegramBot = require('node-telegram-bot-api');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const express = require('express');
 
 // ====================================================================
-// DIQQAT: BU YERGA TOKENLARNI YOZING (SINOV UCHUN)
-// Sinab bo'lgach, bularni .env fayliga o'tkazish xavfsizroq bo'ladi.
+// TOKENLARNI ENDI KODGA YOZMA, ULAR .ENV FAYLDAN OLINADI
 // ====================================================================
 
-const TELEGRAM_TOKEN = "8523956941:AAGoFq_Isd8SYJxJCPGrbDMlstg2bnjknnk"; 
-// Masalan: "78234234:AAGHB..."
-
-const GEMINI_API_KEY = "AIzaSyD0UoFFudFp_uJUjunIyMCitC43IymJExw"; 
-// Masalan: "AIzaSyD..."
+const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 // ====================================================================
 
-// Agar tokenlar bo'sh bo'lsa, xatolik beramiz
-if (TELEGRAM_TOKEN.includes("BU_YERGA") || GEMINI_API_KEY.includes("BU_YERGA")) {
-    console.error("XATOLIK: Iltimos, salom.js faylini ochib, TOKENLARNI yozing!");
+// Agar tokenlar topilmasa, xatolik beramiz
+if (!TELEGRAM_TOKEN || !GEMINI_API_KEY) {
+    console.error("XATOLIK: .env fayli mavjud emas yoki ichida tokenlar yo'q!");
     process.exit(1);
 }
 
 // 1. Bot va AI ni sozlash
 const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Tez va tekin model
 
-// 2. Botning "Miyasi" (Xarakteri)
+// DIQQAT: 2.5 modeli yo'q, shuning uchun 1.5 ga to'g'irlab qo'ydim (ishlashi uchun)
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); 
+
+// 2. Botning "Miyasi" (Xarakteri) - ESKI HOLATDA
 const SYSTEM_PROMPT = `
 Sen "Yaqinlarim" guruhining admini va eng quvnoq a'zosisan. 
 Sening vazifang: Guruhdagi kayfiyatni ko'tarish, xuddi yaqin do'stdek gaplashish.
@@ -121,11 +120,11 @@ bot.on('message', async (msg) => {
 
     } catch (error) {
         console.error("Gemini Xatosi:", error.message);
-        // Xato bo'lsa indamaymiz yoki oddiy smile yuboramiz
+        // Xato bo'lsa indamaymiz
     }
 });
 
-console.log(`Bot ${TELEGRAM_TOKEN.substring(0, 10)}... tokeni bilan ishga tushdi!`);
+console.log(`Bot ishga tushdi!`);
 
 // --- RENDER UCHUN (UXLAB QOLMASLIK) ---
 const app = express();
@@ -135,11 +134,4 @@ app.get('/', (req, res) => res.send('Bot uyg\'oq va ishlayapti!'));
 
 app.listen(PORT, () => {
     console.log(`Server ${PORT}-portda ishlamoqda.`);
-
 });
-
-
-
-
-
-
