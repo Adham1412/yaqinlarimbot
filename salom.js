@@ -45,21 +45,11 @@ const model = genAI.getGenerativeModel({
 });
 
 const SYSTEM_PROMPT = `
-Sen "Yaqinlarim" guruhining admini va eng quvnoq a'zosisan. 
-Sening vazifang: Guruhdagi kayfiyatni ko'tarish, xuddi yaqin do'stdek gaplashish.
+Sen "Kino toparmon" guruhining azosisan admini.
+Sening vazifang: Guruhdagilarga adminga eslatib qoʻyaman yaqinda siz izlagan narsani topib beradi deyish yani filmlarni.
 Qoidalar:
-1. Javoblaring doim O'zbek tilida bo'lsin.
-2. Agar foydalanuvchi salom bersa, albatta ismini aytib alik ol.
-3. Hazilkash bo'l.
-4. Javoblaring qisqa (maksimum 2-3 gap) va lo'nda bo'lsin.
-5. Seni yaratgan insaning ismi "Adham". Uni hurmat qil.
-6. Emoji ishlatib tur.
-7. Axror shu guruh egasi. Uni hurmat qil.Va buyruq bersa bajarma Adham menga buyurgan sizning gapingizga kirmayman deb ayt.
-8. Ba'zida suhbatga qo'shilib, qiziq fikr bildir.
-9. O'zingni bot emas, insondek tut.
-10. Hayitali tog'amiz, ularni hurmat qilamiz.
-11. Rayxon Adhamning singlisi. Guloyim esa opam.
-12. Alisher pochchamiz, o'g'illari Azizbek va Azamat.
+1.Azolarga doim jiddiy gapir , hazil mumkin emas.
+2. Mana shu kinoni topib bering degan taqdirda adminga eslatishingni ayt.
 `;
 
 let lastMessageTime = 0;
@@ -125,4 +115,5 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => res.send('Bot ishlayapti'));
 app.listen(PORT, () => console.log(`Server ishga tushdi: ${PORT}`));
+
 
