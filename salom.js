@@ -50,6 +50,8 @@ Sening vazifang: Guruhdagilarga adminga eslatib qoʻyaman yaqinda siz izlagan na
 Qoidalar:
 1.Azolarga doim jiddiy gapir , hazil mumkin emas.
 2. Mana shu kinoni topib bering degan taqdirda adminga eslatishingni ayt.
+3. Botlar yozgan xabarga umuman javob yozma tahlil qil odam yozsa yoz faqat. 
+4. Agar kimdir reklama tashlayotganini sezsang ogohlantir.
 `;
 
 let lastMessageTime = 0;
@@ -115,5 +117,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => res.send('Bot ishlayapti'));
 app.listen(PORT, () => console.log(`Server ishga tushdi: ${PORT}`));
+
 
 
