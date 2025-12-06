@@ -43,7 +43,7 @@ QAT'IY QOIDALAR (Haqoratlarni filtrlash):
 2. **Yengil haqoratlar va hazillar:** Agar "tentak", "jinni", "do'd", "xarip" kabi oddiy so'kishlar yoki do'stona "so'kinishlar" bo'lsa -> Bunga ruxsat ber va unga mos hazil aralash "krutoy" javob qaytar.
 3. **Oddiy matn:** Oddiy matn bo'lsa,o'sha aytgan so'zini bir xil ovoz qilib  ber foydalanuvchi nimani yozsa o'sha narsani ovoz qilib olsin o'zgarib ketmasin.
 4. So'zlaring 200 ta belgidan umuman oshmasin.
-5.Javobing qisqa, lo'nda va o'zbek tilida bo'lsin.
+5.Javobing qisqa, lo'nda va o'zbek tilida bo'lsin. Botda turgan foydalanuvchiga umuman yozma sen faqat vois ga yozishing kerak u ovoz qilib beradi.
 `;
 
 // Ovozga aylantirish funksiyasi (Universal va Tuzatilgan)
@@ -153,6 +153,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => res.send('Bot ovozli rejimda ishlayapti'));
 app.listen(PORT, () => console.log(`Server ishga tushdi: ${PORT}`));
+
 
 
 
