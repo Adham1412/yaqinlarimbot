@@ -1,19 +1,13 @@
 {
   "name": "yaqinlarim_bot",
   "version": "1.0.0",
-  "description": "",
   "main": "salom.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "google-tts-api": "^2.0.2",
-    "node-telegram-bot-api": "^0.66.0"
+    "node-telegram-bot-api": "^0.66.0",
+    "axios": "^1.6.0" 
   }
 }
