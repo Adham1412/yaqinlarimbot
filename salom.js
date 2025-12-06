@@ -1,8 +1,9 @@
 require('dotenv').config();
 const TelegramBot = require('node-telegram-bot-api');
-// Xavfsizlik sozlamalarini boshqarish uchun kerakli kutubxonalar
 const { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } = require('@google/generative-ai');
 const express = require('express');
+// Ovozga aylantirish uchun kutubxona
+const googleTTS = require('google-tts-api');
 
 // .env dan o'qish
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
@@ -16,43 +17,59 @@ if (!TELEGRAM_TOKEN || !GEMINI_API_KEY) {
 const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-// =================================================================
-// ENG MUHIM JOYI: XAVFSIZLIK FILTRLARINI "O'CHIRIB" TASHLAYMIZ
-// =================================================================
+// Xavfsizlik filtrlari (Gemini o'zi bloklamasligi uchun hammasini ochib qo'yamiz,
+// nazoratni Prompt orqali o'zimiz qilamiz)
 const safetySettings = [
-    {
-        category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-        threshold: HarmBlockThreshold.BLOCK_NONE, // Cheklov yo'q
-    },
-    {
-        category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-        threshold: HarmBlockThreshold.BLOCK_NONE, // Cheklov yo'q
-    },
-    {
-        category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-        threshold: HarmBlockThreshold.BLOCK_NONE, // Cheklov yo'q
-    },
-    {
-        category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-        threshold: HarmBlockThreshold.BLOCK_NONE, // Cheklov yo'q
-    },
+    { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+    { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+    { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+    { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
 ];
 
-// Modelni sozlash (1.5-flash eng tez va barqaror)
 const model = genAI.getGenerativeModel({ 
-    model: "gemini-2.5-flash",
+    model: "gemini-1.5-flash", // 1.5-flash tavsiya etiladi (tezroq va arzonroq)
     safetySettings: safetySettings 
 });
 
+// =================================================================
+// 1. AQLIY MARKAZ (SYSTEM PROMPT)
+// =================================================================
 const SYSTEM_PROMPT = `
-Sen "Kino toparmon" guruhining azosisan admini.
-Sening vazifang: Guruhdagilarga adminga eslatib qoʻyaman yaqinda siz izlagan narsani topib beradi deyish yani filmlarni.
-Qoidalar:
-1.Azolarga doim jiddiy gapir , hazil mumkin emas.
-2. Mana shu kinoni topib bering degan taqdirda adminga eslatishingni ayt.
-3. Botlar yozgan xabarga umuman javob yozma tahlil qil odam yozsa yoz faqat. 
-4. Agar kimdir reklama tashlayotganini sezsang ogohlantir.
+Sen Telegram guruh adminisan. Vazifang: Foydalanuvchi yozgan matnni tahlil qilish va javob berish.
+
+QAT'IY QOIDALAR (Haqoratlarni filtrlash):
+1. **O'ta og'ir haqoratlar:** Agar matnda onadan so'kish, jinsiy zo'ravonlik, o'ta og'ir shaxsiyatga tegish yoki millatchilik bo'lsa -> Faqatgina "BLOCK_HEAVY" deb javob qaytar (boshqa hech narsa yozma).
+2. **Yengil haqoratlar va hazillar:** Agar "tentak", "jinni", "do'd", "xarip" kabi oddiy so'kishlar yoki do'stona "so'kinishlar" bo'lsa -> Bunga ruxsat ber va unga mos hazil aralash "krutoy" javob qaytar.
+3. **Oddiy matn:** Oddiy matn bo'lsa,o'sha aytgan so'zini bir xil ovoz qilib  ber foydalanuvchi nimani yozsa o'sha narsani ovoz qilib olsin o'zgarib ketmasin.
+4. So'zlaring 200 ta belgidan umuman oshmasin.
+5.Javobing qisqa, lo'nda va o'zbek tilida bo'lsin.
 `;
+
+// Ovozga aylantirish funksiyasi (Universal)
+async function sendVoiceMessage(chatId, text, replyToMessageId) {
+    try {
+        // Matn juda uzun bo'lsa, qisqartiramiz (API limiti bor)
+        const safeText = text.substring(0, 200); 
+        
+        // Ovoz havolasini olamiz
+        const url = googleTTS.getAudioUrl(safeText, {
+            lang: 'uz',
+            slow: false,
+            host: 'https://translate.google.com',
+        });
+        
+        // Ovozli xabar yuboramiz
+        await bot.sendVoice(chatId, url, { 
+            reply_to_message_id: replyToMessageId,
+            caption: "🤖 " + text // Matnni ham caption qilib qo'shamiz
+        });
+
+    } catch (e) {
+        console.error("Ovozga aylantirishda xato:", e.message);
+        // Ovoz o'xshamasa, shunchaki matnni o'zini yuboramiz
+        await bot.sendMessage(chatId, text, { reply_to_message_id: replyToMessageId });
+    }
+}
 
 let lastMessageTime = 0;
 
@@ -69,54 +86,58 @@ bot.on('message', async (msg) => {
     
     let shouldReply = false;
 
-    // Mantiq: Qachon javob beradi?
+    // Javob berish mantiqi
     if (botMentioned || (isReply && isReply.from.id === bot.id)) {
         shouldReply = true;
     } else if (isReply && isReply.from.id !== bot.id) {
         shouldReply = false;
     } else if ((currentTime - lastMessageTime > 15000) && !isReply) {
         shouldReply = true;
-    } else if (Math.random() < 0.2 && !isReply) {
-        shouldReply = true;
     }
 
-    lastMessageTime = currentTime;
+    // Sinov uchun har doim javob beradigan qilib turish (ixtiyoriy)
+    // shouldReply = true; 
 
     if (!shouldReply) return;
+    lastMessageTime = currentTime;
 
     try {
-        // "Yozmoqda..." statusini yuboramiz
         bot.sendChatAction(chatId, 'typing');
 
+        // Geminiga so'rov yuboramiz
         const chat = model.startChat({
             history: [
                 { role: "user", parts: [{ text: SYSTEM_PROMPT }] },
-                { role: "model", parts: [{ text: "Tushundim, boshladik!" }] },
+                { role: "model", parts: [{ text: "Tushundim, filtrlash tizimi va javob berishga tayyorman." }] },
             ],
         });
 
-        const result = await chat.sendMessage(`Foydalanuvchi (${senderName}) yozdi: "${text}". Unga mos hazil yoki javob yoz.`);
-        
-        // Javobni olamiz
-        const response = result.response.text();
+        const result = await chat.sendMessage(`Foydalanuvchi (${senderName}) yozdi: "${text}".`);
+        const response = result.response.text().trim();
 
-        // Javobni yuboramiz
-        if (response) {
-            await bot.sendMessage(chatId, response, { reply_to_message_id: msg.message_id });
+        // =================================================================
+        // 2. FILTRLASH VA OVOZLI JAVOB
+        // =================================================================
+        
+        if (response.includes("BLOCK_HEAVY")) {
+            // Agar Gemini buni o'ta og'ir deb topsa:
+            await bot.sendMessage(chatId, `⚠️ ${senderName}, chegaradan chiqmaylik! Bunday gaplarni ovozlashtira olmayman.`, { reply_to_message_id: msg.message_id });
+        } else {
+            // Agar yengil yoki oddiy gap bo'lsa -> Ovozli javob yuboramiz
+            // Bot "yozmoqda" emas, "ovoz yozmoqda" statusini ko'rsatadi
+            bot.sendChatAction(chatId, 'record_voice');
+            
+            // Ovozli xabar yuborish funksiyasini chaqiramiz
+            await sendVoiceMessage(chatId, response, msg.message_id);
         }
 
     } catch (error) {
-        // XATOLIK BO'LSA HAM GURUHGA "XATO" DEB YOZMAYDI.
-        // Faqat server logiga yozadi, foydalanuvchilar bilmaydi.
-        console.error("Ichki xatolik (Bot jim turadi):", error.message);
+        console.error("Ichki xatolik:", error.message);
     }
 });
 
-// Server qismi (Render.com uchun)
+// Server qismi
 const app = express();
 const PORT = process.env.PORT || 3000;
-app.get('/', (req, res) => res.send('Bot ishlayapti'));
+app.get('/', (req, res) => res.send('Bot ovozli rejimda ishlayapti'));
 app.listen(PORT, () => console.log(`Server ishga tushdi: ${PORT}`));
-
-
-
