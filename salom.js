@@ -27,7 +27,7 @@ const safetySettings = [
 ];
 
 const model = genAI.getGenerativeModel({ 
-    model: "gemini-1.5-flash", // 1.5-flash tavsiya etiladi (tezroq va arzonroq)
+    model: "gemini-2.5-flash", // 1.5-flash tavsiya etiladi (tezroq va arzonroq)
     safetySettings: safetySettings 
 });
 
@@ -35,7 +35,7 @@ const model = genAI.getGenerativeModel({
 // 1. AQLIY MARKAZ (SYSTEM PROMPT)
 // =================================================================
 const SYSTEM_PROMPT = `
-Sen Telegram guruh adminisan. Vazifang: Foydalanuvchi yozgan matnni tahlil qilish va javob berish.
+Sen Telegramdasan. Vazifang: Foydalanuvchi yozgan matnni tahlil qilish va javob berish.
 
 QAT'IY QOIDALAR (Haqoratlarni filtrlash):
 1. **O'ta og'ir haqoratlar:** Agar matnda onadan so'kish, jinsiy zo'ravonlik, o'ta og'ir shaxsiyatga tegish yoki millatchilik bo'lsa -> Faqatgina "BLOCK_HEAVY" deb javob qaytar (boshqa hech narsa yozma).
@@ -141,3 +141,4 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => res.send('Bot ovozli rejimda ishlayapti'));
 app.listen(PORT, () => console.log(`Server ishga tushdi: ${PORT}`));
+
