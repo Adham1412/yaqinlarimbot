@@ -2,6 +2,7 @@ require('dotenv').config();
 const TelegramBot = require('node-telegram-bot-api');
 const { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } = require('@google/generative-ai');
 const express = require('express');
+const axios = require('axios'); // Buni eng tepaga qo'shishni unutmang!
 // Ovozga aylantirish uchun kutubxona
 const googleTTS = require('google-tts-api');
 
@@ -45,28 +46,39 @@ QAT'IY QOIDALAR (Haqoratlarni filtrlash):
 5.Javobing qisqa, lo'nda va o'zbek tilida bo'lsin.
 `;
 
-// Ovozga aylantirish funksiyasi (Universal)
+// Ovozga aylantirish funksiyasi (Universal va Tuzatilgan)
 async function sendVoiceMessage(chatId, text, replyToMessageId) {
     try {
-        // Matn juda uzun bo'lsa, qisqartiramiz (API limiti bor)
-        const safeText = text.substring(0, 200); 
-        
-        // Ovoz havolasini olamiz
+        // 1. Matnni qisqartirish
+        const safeText = text.substring(0, 190); // 200 dan sal kamroq olamiz xavfsizlik uchun
+
+        // 2. Havolani olish
         const url = googleTTS.getAudioUrl(safeText, {
             lang: 'uz',
             slow: false,
             host: 'https://translate.google.com',
         });
-        
-        // Ovozli xabar yuboramiz
-        await bot.sendVoice(chatId, url, { 
+
+        // 3. Audio faylni yuklab olish (Buffer)
+        const response = await axios({
+            method: 'get',
+            url: url,
+            responseType: 'arraybuffer' // Muhim!
+        });
+
+        // 4. Telegramga yuborish (Maxsus opsiyalar bilan)
+        await bot.sendVoice(chatId, Buffer.from(response.data), {
             reply_to_message_id: replyToMessageId,
-            caption: "🤖 " + text // Matnni ham caption qilib qo'shamiz
+            caption: "🤖 " + text
+        }, {
+            // MANA SHU YERDA OLDIN XATO BOR EDI:
+            filename: 'voice.mp3',
+            contentType: 'audio/mpeg'
         });
 
     } catch (e) {
-        console.error("Ovozga aylantirishda xato:", e.message);
-        // Ovoz o'xshamasa, shunchaki matnni o'zini yuboramiz
+        console.error("Ovoz yuborishda xatolik:", e.message);
+        // Agar ovoz o'xshamasa, shunchaki matn yuborilsin
         await bot.sendMessage(chatId, text, { reply_to_message_id: replyToMessageId });
     }
 }
@@ -141,5 +153,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => res.send('Bot ovozli rejimda ishlayapti'));
 app.listen(PORT, () => console.log(`Server ishga tushdi: ${PORT}`));
+
 
 
