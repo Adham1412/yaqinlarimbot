@@ -41,10 +41,10 @@ async function sendVoiceMessage(chatId, text, replyToMessageId) {
         
         const url = googleTTS.getAudioUrl(safeText, {
             lang: 'uz',
-            slow: false,
+            // MANA BU YERGA QO'YING:
+            slow: true, // <--- Hozirgi muammoni hal qilish uchun TRUE ga o'zgartirdik
             host: 'https://translate.google.com',
         });
-        
         // Audio yuklab olish
         const response = await axios({
             method: 'get',
@@ -110,5 +110,6 @@ const app = express();
 app.get('/', (req, res) => res.send('Bot ishlayapti...'));
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server: ${PORT}`));
+
 
 
