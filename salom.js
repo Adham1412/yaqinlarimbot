@@ -24,7 +24,7 @@ const safetySettings = [
 ];
 
 const model = genAI.getGenerativeModel({ 
-    model: "gemini-1.5-flash", 
+    model: "gemini-2.5-flash", 
     safetySettings: safetySettings 
 });
 
@@ -110,3 +110,4 @@ const app = express();
 app.get('/', (req, res) => res.send('Bot ishlayapti...'));
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server: ${PORT}`));
+
