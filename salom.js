@@ -13,7 +13,7 @@ if (!TELEGRAM_TOKEN || !GEMINI_API_KEY) {
     process.exit(1);
 }
 
-const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
+const bot = new TelegramBot(TELEGRAM_TOKEN;
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 const safetySettings = [
@@ -31,7 +31,7 @@ const model = genAI.getGenerativeModel({
 const SYSTEM_PROMPT = `
 Sen Telegram guruh adminisan. 
 Agar matnda o'ta og'ir so'kish (ona, jinsiy) bo'lsa -> faqat "BLOCK_HEAVY" deb yoz.
-Boshqa hollarda -> qisqa, hazil aralash o'zbekcha javob yoz.
+Boshqa hollarda -> qisqa, hazil aralash o'zbekcha javob yoz. Sen foydalanuvchi nima desa shuni qaytar bo'ldi.
 `;
 
 // Ovoz yuborish funksiyasi (Debug rejimi bilan)
@@ -110,4 +110,5 @@ const app = express();
 app.get('/', (req, res) => res.send('Bot ishlayapti...'));
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server: ${PORT}`));
+
 
