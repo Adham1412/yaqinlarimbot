@@ -14,7 +14,7 @@ if (!TELEGRAM_TOKEN || !GEMINI_API_KEY) {
     process.exit(1);
 }
 
-const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
+const bot = new TelegramBot(TELEGRAM_TOKEN);
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 // Xavfsizlik filtrlari (Gemini o'zi bloklamasligi uchun hammasini ochib qo'yamiz,
@@ -141,4 +141,5 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => res.send('Bot ovozli rejimda ishlayapti'));
 app.listen(PORT, () => console.log(`Server ishga tushdi: ${PORT}`));
+
 
